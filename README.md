@@ -1,66 +1,51 @@
-## Foundry
+# MWE
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Reproduce the error by
 
-Foundry consists of:
+1. Cloning the repo with
+    ```bash
+    git clone --recursive https://github.com/heueristik/token
+    ```
+2. Running the test at the bottom of `src/Token.sol` with
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+    ```bash
+    forge clean && forge build && forge test
+    ```
+    which results in
 
-## Documentation
+    ```bash
+    ➜  token git:(main) ✗ forge clean && forge build && forge test
+    [⠊] Compiling...
+    [⠒] Compiling 57 files with Solc 0.8.28
+    [⠔] Solc 0.8.28 finished in 5.27s
+    Compiler run successful!
+    [⠊] Compiling...
+    No files changed, compilation skipped
 
-https://book.getfoundry.sh/
+    Ran 1 test for src/Token.sol:TokenTest
+    [FAIL: revert: Upgrade safety validation failed:
+    ✘  src/Token.sol:Token
 
-## Usage
+        src/Token.sol:29: Missing initializer calls for one or more parent contracts: `ERC20Upgradeable`
+            Call the parent initializers in your initializer function
+            https://zpl.in/upgrades/error-001
 
-### Build
+    FAILED] setUp() (gas: 0)
+    Suite result: FAILED. 0 passed; 1 failed; 0 skipped; finished in 1.63s (0.00ns CPU time)
 
-```shell
-$ forge build
-```
+    Ran 1 test suite in 1.63s (1.63s CPU time): 0 tests passed, 1 failed, 0 skipped (1 total tests)
 
-### Test
+    Failing tests:
+    Encountered 1 failing test in src/Token.sol:TokenTest
+    [FAIL: revert: Upgrade safety validation failed:
+    ✘  src/Token.sol:Token
 
-```shell
-$ forge test
-```
+        src/Token.sol:29: Missing initializer calls for one or more parent contracts: `ERC20Upgradeable`
+            Call the parent initializers in your initializer function
+            https://zpl.in/upgrades/error-001
 
-### Format
+    FAILED] setUp() (gas: 0)
 
-```shell
-$ forge fmt
-```
+    Encountered a total of 1 failing tests, 0 tests succeeded
+    ```
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
