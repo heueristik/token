@@ -3,12 +3,14 @@ pragma solidity 0.8.28;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import {ERC20BurnableUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {Upgrades} from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 
 import {Test} from "forge-std/Test.sol";
 
-contract Token is ERC20Upgradeable, UUPSUpgradeable {
+contract Token is ERC20Upgradeable, ERC20BurnableUpgradeable, UUPSUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -21,6 +23,7 @@ contract Token is ERC20Upgradeable, UUPSUpgradeable {
     function __Token_init(address initialOwner) internal onlyInitializing {
         __Context_init_unchained();
         __ERC20_init_unchained("Token", "TOK");
+        __ERC20Burnable_init_unchained();
         __UUPSUpgradeable_init_unchained();
 
         __Token_init_unchained(initialOwner);
