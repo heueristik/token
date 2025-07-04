@@ -5,12 +5,16 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import {ERC20BurnableUpgradeable} from
     "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import {ERC20PermitUpgradeable} from
+    "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
+import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
+import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {Upgrades} from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 
 import {Test} from "forge-std/Test.sol";
 
-contract Token is ERC20Upgradeable, ERC20BurnableUpgradeable, UUPSUpgradeable {
+contract Token is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20BurnableUpgradeable, UUPSUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -23,6 +27,9 @@ contract Token is ERC20Upgradeable, ERC20BurnableUpgradeable, UUPSUpgradeable {
     function __Token_init(address initialOwner) internal onlyInitializing {
         __Context_init_unchained();
         __ERC20_init_unchained("Token", "TOK");
+        __ERC20Permit_init_unchained("Token");
+        __EIP712_init_unchained({name: "Token", version: "1"});
+        __Nonces_init_unchained();
         __ERC20Burnable_init_unchained();
         __UUPSUpgradeable_init_unchained();
 
