@@ -23,6 +23,10 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Install @openzeppelin/upgrades-core@latest
+        run: |
+          npm install @openzeppelin/upgrades-core@latest
+
       - name: Show Forge version
         run: |
           forge --version
