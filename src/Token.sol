@@ -14,17 +14,23 @@ import {Upgrades} from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 
 import {Test} from "forge-std/Test.sol";
 
-contract Token is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20BurnableUpgradeable, UUPSUpgradeable {
+contract TokenV1 is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20BurnableUpgradeable, UUPSUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) external initializer {
-        __Token_init(initialOwner);
+    function initialize(address initialOwner) external virtual initializer {
+        __ERC20_init("Token", "TOK");
+        __ERC20Permit_init("Token");
+        __ERC20Burnable_init();
+        __UUPSUpgradeable_init();
+
+        __TokenV1_init_unchained(initialOwner);
     }
 
-    function __Token_init(address initialOwner) internal onlyInitializing {
+    /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
+    function __TokenV1_init(address initialOwner) internal onlyInitializing {
         __Context_init_unchained();
         __ERC20_init_unchained("Token", "TOK");
         __ERC20Permit_init_unchained("Token");
@@ -33,10 +39,10 @@ contract Token is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20BurnableUpgrade
         __ERC20Burnable_init_unchained();
         __UUPSUpgradeable_init_unchained();
 
-        __Token_init_unchained(initialOwner);
+        __TokenV1_init_unchained(initialOwner);
     }
 
-    function __Token_init_unchained(address initialOwner) internal onlyInitializing {
+    function __TokenV1_init_unchained(address initialOwner) internal onlyInitializing {
         _mint(initialOwner, 100);
     }
 
@@ -50,22 +56,46 @@ contract Token is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20BurnableUpgrade
 
 contract TokenTest is Test {
     address internal _defaultSender;
-    Token internal _tokenProxy;
+    TokenV1 internal _tokenProxy;
 
     function setUp() public {
         (, _defaultSender,) = vm.readCallers();
 
         // Deploy proxy and mint tokens for the `_defaultSender`.
         vm.prank(_defaultSender);
-        _tokenProxy = Token(
+        _tokenProxy = TokenV1(
             Upgrades.deployUUPSProxy({
-                contractName: "Token.sol:Token",
-                initializerData: abi.encodeCall(Token.initialize, _defaultSender)
+                contractName: "Token.sol:TokenV1",
+                initializerData: abi.encodeCall(TokenV1.initialize, _defaultSender)
             })
         );
     }
 
     function test_balance() public view {
         assertEq(_tokenProxy.balanceOf(_defaultSender), 100);
+    }
+}
+
+contract TokenV2 is TokenV1 {
+    event ExampleEvent();
+
+    /// @custom:oz-upgrades-validate-as-initializer
+    function initialize(address initialOwner) external override reinitializer(2) {
+        __TokenV1_init(initialOwner);
+        __TokenV2_init();
+    }
+
+    /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
+    /// @custom:oz-upgrades-validate-as-initializer
+    function initializeFromV1() external reinitializer(2) {
+        __TokenV2_init();
+    }
+
+    function __TokenV2_init() internal onlyInitializing {
+        __TokenV2_init_unchained();
+    }
+
+    function __TokenV2_init_unchained() internal onlyInitializing {
+        emit ExampleEvent();
     }
 }
