@@ -26,23 +26,6 @@ contract TokenV1 is ERC20Upgradeable, ERC20PermitUpgradeable, ERC20BurnableUpgra
         __ERC20Burnable_init();
         __UUPSUpgradeable_init();
 
-        __TokenV1_init_unchained(initialOwner);
-    }
-
-    /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
-    function __TokenV1_init(address initialOwner) internal onlyInitializing {
-        __Context_init_unchained();
-        __ERC20_init_unchained("Token", "TOK");
-        __ERC20Permit_init_unchained("Token");
-        __EIP712_init_unchained({name: "Token", version: "1"});
-        __Nonces_init_unchained();
-        __ERC20Burnable_init_unchained();
-        __UUPSUpgradeable_init_unchained();
-
-        __TokenV1_init_unchained(initialOwner);
-    }
-
-    function __TokenV1_init_unchained(address initialOwner) internal onlyInitializing {
         _mint(initialOwner, 100);
     }
 
@@ -81,21 +64,19 @@ contract TokenV2 is TokenV1 {
 
     /// @custom:oz-upgrades-validate-as-initializer
     function initialize(address initialOwner) external override reinitializer(2) {
-        __TokenV1_init(initialOwner);
-        __TokenV2_init();
+        __ERC20_init("Token", "TOK");
+        __ERC20Permit_init("Token");
+        __ERC20Burnable_init();
+        __UUPSUpgradeable_init();
+
+        _mint(initialOwner, 100);
+
+        emit ExampleEvent();
     }
 
     /// @custom:oz-upgrades-unsafe-allow missing-initializer-call
     /// @custom:oz-upgrades-validate-as-initializer
     function initializeFromV1() external reinitializer(2) {
-        __TokenV2_init();
-    }
-
-    function __TokenV2_init() internal onlyInitializing {
-        __TokenV2_init_unchained();
-    }
-
-    function __TokenV2_init_unchained() internal onlyInitializing {
         emit ExampleEvent();
     }
 }
